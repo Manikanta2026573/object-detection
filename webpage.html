@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Object Detection</title>
+    <style>
+        body {
+            background: url(kkkk.jpg) no-repeat center center fixed; /* Ensures the background image stays fixed */
+            background-size: cover; /* Cover the entire viewport */
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* Center content vertically */
+            text-align: center;
+            font-family: Arial, sans-serif; /* Added a fallback font for better readability */
+        }
+        header {
+            width: 100%;
+            padding: 20px;
+            color: lightgreen;
+            position: fixed; /* Ensure header stays at the top */
+            top: 50px;
+            left: -20px;
+            z-index: 1; /* Ensure header stays above other content */
+        }
+        .content {
+            display: flex;
+            color: white;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding-top: 80px; /* Added padding to prevent overlap with the fixed header */
+            box-sizing: border-box;
+        }
+        #image {
+            max-width: 100%;
+            height: auto;
+        }
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .container {
+            position: relative;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 style="font-size:40px;">WELCOME TO OBJECT DETECTION</h1>
+    </header>
+    <div class="content">
+        <h1>Upload Image here 👇👇</h1>
+        <input type="file" accept="image/*" id="upload">
+        <div class="container">
+            <img id="image" />
+            <canvas id="canvas"></canvas>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+    <script>
+        const upload = document.getElementById('upload');
+        const image = document.getElementById('image');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        upload.addEventListener('change', async (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    image.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        image.onload = async () => {
+            canvas.width = image.width;
+            canvas.height = image.height;
+            const model = await cocoSsd.load();
+            const predictions = await model.detect(image);
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(image, 0, 0);
+        };
+    </script>
+</body>
+</html>
